@@ -14,6 +14,6 @@ public interface MissionRepository extends JpaRepository<Mission, Integer> {
 	List<Mission> listMissionavenir();
 
 	@Query("SELECT m FROM Mission m WHERE m.dateDebut > NOW() AND m.tauxJournalier >= ?1")
-	List<Mission> listMissionavenir(BigDecimal tauxJournalier);
+	List<Mission> listMissionAvenirEnFonctionDutaux(BigDecimal tauxJournalier);
 
 }
