@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
 
-import dev.mission.MissionAppApplication;
 import dev.mission.entite.Mission;
 import dev.mission.repository.MissionRepository;
 
@@ -16,7 +15,7 @@ import dev.mission.repository.MissionRepository;
 @Profile("listerNextAvecTaux")
 public class ListerProchainesMissionsParTJM implements Runnable {
 
-	private static final Logger LOG = LoggerFactory.getLogger(MissionAppApplication.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ListerProchainesMissionsParTJM.class);
 
 	private MissionRepository missionRepository;
 
@@ -30,7 +29,10 @@ public class ListerProchainesMissionsParTJM implements Runnable {
 	@Override
 	public void run() {
 
-		List<Mission> listeMissions = missionRepository.listMissionAvenirEnFonctionDutaux(new BigDecimal(100));
+		// Il faut mettre des String au bigDecimal pour qu'il soit précis et pas un
+		// double ou int...
+
+		List<Mission> listeMissions = missionRepository.listMissionAvenirEnFonctionDutaux(new BigDecimal("100"));
 
 		if (listeMissions.isEmpty()) {
 

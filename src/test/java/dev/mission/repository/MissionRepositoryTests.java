@@ -6,67 +6,79 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.transaction.Transactional;
-
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import dev.mission.entite.Mission;
 
-@DataJpaTest
+@DataJpaTest // DataSource H2, EntityManager, Context Spring, JPA, ...
+// => objectif tester un repository
 public class MissionRepositoryTests {
 
-	@Autowired
-	TestEntityManager entityManager;
+	private static final Logger LOG = LoggerFactory.getLogger(MissionRepositoryTests.class);
 
 	@Autowired
-	MissionRepository missionRepository;
+	private MissionRepository missionRepository;
 
-	@Transactional
-	@Test
-	void findByDateDebutGreaterThanEqual() {
+	@Autowired
+	private TestEntityManager entityManager;
 
-		// TODO insérer des données avec `entityManager`
+	@BeforeEach
+	public void init() {
+		Mission mission = new Mission();
+		mission.setDateDebut(LocalDate.parse("2030-01-01"));
+		mission.setDateFin(LocalDate.parse("2031-01-01"));
+		mission.setLibelle("tartelette");
+		mission.setTauxJournalier(new BigDecimal("112.12"));
 
-		Mission missionInsert = new Mission();
-		missionInsert.setLibelle("Mission 1");
-		missionInsert.setTauxJournalier(new BigDecimal("150.50"));
-		missionInsert.setDateDebut(LocalDate.of(2021, 7, 6));
-		missionInsert.setDateFin(LocalDate.of(2021, 7, 5));
+		Mission mission1 = new Mission();
+		mission1.setDateDebut(LocalDate.parse("2019-01-01"));
+		mission1.setDateFin(LocalDate.parse("2031-01-01"));
+		mission1.setLibelle("tartelette");
+		mission1.setTauxJournalier(new BigDecimal("112.12"));
 
-		missionRepository.save(missionInsert);
+		Mission mission2 = new Mission();
+		mission2.setDateDebut(LocalDate.parse("2028-01-01"));
+		mission2.setDateFin(LocalDate.parse("2031-01-01"));
+		mission2.setLibelle("tartelette");
+		mission2.setTauxJournalier(new BigDecimal("112.12"));
 
-		// TODO exécuter la requête
+		// persist
+		List.of(mission, mission1, mission2).forEach(this.entityManager::persist);
 
-		List<Mission> listeRequête = missionRepository.listMissionavenir();
-
-		// TODO vérifier le résultat
-
-		assertThat(listeRequête).isNotEmpty();
+		/*
+		 * this.entityManager.persist(mission); this.entityManager.persist(mission1);
+		 * this.entityManager.persist(mission1);
+		 */
 	}
 
-	@Transactional
 	@Test
-	void findByDateDebutGreaterThanEqualAndTauxJournalierGreaterThanEqual() {
-		// TODO insérer des données avec `entityManager`
+	public void listMissionavenir() {
+		List<Mission> missions = this.missionRepository.listMissionavenir();
 
-		Mission missionInsert = new Mission();
-		missionInsert.setLibelle("Mission 1");
-		missionInsert.setTauxJournalier(new BigDecimal("150.50"));
-		missionInsert.setDateDebut(LocalDate.of(2021, 7, 6));
-		missionInsert.setDateFin(LocalDate.of(2021, 7, 5));
+		for (Mission m : missions) {
+			LocalDate dateDeMission = m.getDateDebut();
+			assertThat(dateDeMission).isAfter(LocalDate.now());
+		}
+	}
 
-		missionRepository.save(missionInsert);
+	@Test
+	void listMissionAvenirEnFonctionDutaux() {
+		List<Mission> missions = this.missionRepository.listMissionAvenirEnFonctionDutaux(new BigDecimal("100"));
 
-		// TODO exécuter la requête
+		assertThat(missions.size()).isEqualTo(2);
+	}
 
-		List<Mission> listeRequête = missionRepository.listMissionAvenirEnFonctionDutaux(new BigDecimal(500));
+	@Test
+	void listMissionAvenirEnFonctionDutauxKO() {
+		List<Mission> missions = this.missionRepository.listMissionAvenirEnFonctionDutaux(new BigDecimal("1000"));
 
-		// TODO vérifier le résultat
-
-		assertThat(listeRequête).isEmpty();
+		assertThat(missions.size()).isEqualTo(0);
 	}
 
 }

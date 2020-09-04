@@ -7,13 +7,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
 
-import dev.mission.MissionAppApplication;
 import dev.mission.entite.Mission;
 import dev.mission.repository.MissionRepository;
 
 @Controller
 @Profile("listerNext")
 public class ListerProchainesMissions implements Runnable {
+
+	private static final Logger LOG = LoggerFactory.getLogger(ListerProchainesMissions.class);
 
 	// On créer une instance de l'interface missionRepository afin de pouvoir
 	// appeler les méthodes
@@ -26,8 +27,6 @@ public class ListerProchainesMissions implements Runnable {
 	 * importer les Log de slf4j...
 	 * 
 	 */
-
-	private static final Logger LOG = LoggerFactory.getLogger(MissionAppApplication.class);
 
 	public ListerProchainesMissions(MissionRepository missionRepository) {
 		super();
@@ -50,8 +49,6 @@ public class ListerProchainesMissions implements Runnable {
 						mission.getTauxJournalier());
 
 			}
-
 		}
-
 	}
 }

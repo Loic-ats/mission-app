@@ -14,7 +14,15 @@ public class MissionAppApplication {
 
 		ConfigurableApplicationContext context = SpringApplication.run(MissionAppApplication.class, args);
 
-		// Récupération d'un bean de type Runnable
+		/*
+		 * 
+		 * Récupération d'un bean de type Runnable On peut supprimer les lignes suivante
+		 * (spécifique spring boot) si les classe du package exec implement
+		 * CommandLineRunner au lieu de runnable la méthode run prend alors en parametre
+		 * un tableau de string
+		 * 
+		 */
+
 		Runnable exec = context.getBean(Runnable.class);
 
 		// exécution
